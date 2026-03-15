@@ -40,21 +40,27 @@ def generar_audio_masculino(texto):
     asyncio.run(crear_mp3())
     return archivo_salida
 
-# 4. Memoria y Conexión
+# 4. Memoria y Conexión y Botón de Reinicio
 if "cliente_ia" not in st.session_state:
-    # Ahora la llave estará escondida en la caja fuerte secreta de Streamlit
     TU_API_KEY = st.secrets["GEMINI_API_KEY"]
     st.session_state.cliente_ia = genai.Client(api_key=TU_API_KEY)
 
+# NUEVO: Botón para limpiar el pizarrón y destrabar la memoria
+if st.sidebar.button("🔄 Nueva Clase / Reiniciar Chat"):
+    st.session_state.historial = []
+    if "chat_session" in st.session_state:
+        del st.session_state["chat_session"]
+    st.rerun() # Esto recarga la página al instante
+
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = st.session_state.cliente_ia.chats.create(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash", # Cambiamos al modelo de máxima estabilidad
         config=types.GenerateContentConfig(
             system_instruction=instrucciones_sistema,
             temperature=0.2
         )
     )
-    st.session_state.historial = [] 
+    st.session_state.historial = []
 
 # 5. Barra Lateral con el Teclado Matemático
 with st.sidebar:
