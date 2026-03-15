@@ -48,7 +48,7 @@ if "cliente_ia" not in st.session_state:
 
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = st.session_state.cliente_ia.chats.create(
-        model="gemini-2.5-flash",
+        model="gemini-2.0-flash",
         config=types.GenerateContentConfig(
             system_instruction=instrucciones_sistema,
             temperature=0.2
