@@ -111,4 +111,8 @@ if prompt_alumno:
                 os.remove(archivo_audio) # Borramos el temporal para no llenar tu disco
                 
         except Exception as e:
-            st.error(f"Error técnico: {e}")
+            error_str = str(e)
+            if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                st.warning("¡Uf! 😅 HugoBot está atendiendo a muchos alumnos al mismo tiempo. Por favor, respira, cuenta hasta 30 y vuelve a enviar tu mensaje.")
+            else:
+                st.error(f"Error técnico: {e}")
