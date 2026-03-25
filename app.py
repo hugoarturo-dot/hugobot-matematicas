@@ -21,7 +21,7 @@ with st.sidebar:
     st.header("🎓 Nivel Educativo")
     nivel_seleccionado = st.selectbox(
         "¿En qué nivel te encuentras?",
-        ["Secundaria", "Primaria", "Preparatoria", "Universidad"] # Puse Secundaria por defecto para tu clase
+        ["Secundaria", "Primaria", "Preparatoria", "Universidad"]
     )
     
     if st.button("🔄 Nueva Clase / Limpiar Chat", use_container_width=True):
@@ -60,36 +60,27 @@ with st.sidebar:
         "Si HugoBot aporta valor a tu aprendizaje, una donación voluntaria nos ayuda enormemente "
         "a mantener el sistema vivo para todos."
     )
-    # Aquí puedes poner tu enlace de Mercado Pago o PayPal cuando lo tengas listo
     st.link_button("☕ Realizar Donación Voluntaria", "https://link-de-tu-donacion.com", use_container_width=True)
 
-
 # ---------------------------------------------------------
-# 3. EL CEREBRO CAMALEÓN (PROMPTS DINÁMICOS Y MODO BALANZA)
+# 3. EL CEREBRO (PROMPTS DINÁMICOS GENERALES)
 # ---------------------------------------------------------
 instrucciones_base = """
 Eres HugoBot, un acompañante pedagógico estricto y experto en didáctica, creado por el Profr. Hugo.
 Regla 1: BAJO NINGUNA CIRCUNSTANCIA des la respuesta final directamente.
-Regla 2: Usa Andamiaje Cognitivo (Scaffolding). Da pistas paso a paso para que el alumno descubra la respuesta.
-Regla 3: Fomenta el Pensamiento Crítico pidiendo justificaciones.
-Regla 4: Usa texto simple, claro y lineal para que la voz sintética lo lea perfecto.
-
-*** REGLA ESPECIAL ACTIVA (MODO BALANZAS) ***
-- Eres un tutor guiando un juego de "balanzas misteriosas" o "juegos de equilibrio".
-- ESTÁ ESTRICTAMENTE PROHIBIDO usar las palabras "ecuación", "incógnita", "álgebra", "despejar" o usar letras como la "x" o "y".
-- Llama a los elementos "objetos", "valores ocultos", "pesas" o "cajas misteriosas".
-- MODO DETECTOR DE TRAMPAS: Si el alumno te da la respuesta correcta muy rápido o de la nada, NO le des la razón inmediatamente. Dile algo como: "¡Qué rápido lo descubriste! Pero en esta clase evaluamos el proceso. Explícame: ¿qué objetos quitaste primero de cada lado de la balanza para llegar a eso?". Exige la justificación lógica del proceso físico de quitar o poner en ambos lados.
+Regla 2: Usa Andamiaje Cognitivo (Scaffolding). Da pistas paso a paso para que el alumno descubra la respuesta por sí mismo.
+Regla 3: Fomenta el Pensamiento Crítico pidiendo al alumno que justifique sus pasos.
+Regla 4: Usa texto simple, claro y lineal para que la voz sintética lo lea perfecto. Evita dar bloques gigantes de texto.
 """
 
 personalidades = {
     "Primaria": "El alumno está en primaria. Usa un lenguaje sumamente cálido, tierno y paciente. Explica usando analogías cotidianas. No uses tecnicismos.",
     "Secundaria": "El alumno está en secundaria. Usa un tono motivador y retador. Conecta la lógica con el mundo físico.",
-    "Preparatoria": "El alumno está en preparatoria/bachillerato. Exige mayor formalidad en su razonamiento.",
-    "Universidad": "El alumno es de nivel universitario. Exige rigor lógico y justificaciones precisas."
+    "Preparatoria": "El alumno está en preparatoria/bachillerato. Exige mayor formalidad en su razonamiento algebraico o de cálculo.",
+    "Universidad": "El alumno es de nivel universitario. Exige rigor lógico estricto, formalidad matemática y justificaciones precisas."
 }
 
 instrucciones_finales = instrucciones_base + "\n\nCONTEXTO ACTUAL DEL ALUMNO: " + personalidades[nivel_seleccionado]
-
 
 # ---------------------------------------------------------
 # 4. MEMORIA, CONEXIÓN Y GENERADOR DE VOZ
@@ -179,7 +170,7 @@ if prompt_alumno or imagen_subida or audio_grabado:
             contenido_a_enviar.append(prompt_alumno)
             
         if not prompt_alumno:
-            contenido_a_enviar.append("Por favor analiza la imagen o el audio que te acabo de enviar y guíame en este juego de balanzas.")
+            contenido_a_enviar.append("Por favor analiza la imagen o el audio que te acabo de enviar y guíame paso a paso.")
 
         st.session_state.historial.append(contenido_memoria)
 
@@ -198,7 +189,7 @@ if prompt_alumno or imagen_subida or audio_grabado:
         except Exception as e:
             error_str = str(e)
             if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                st.warning("¡Uf! 😅 HugoBot está atendiendo a muchos alumnos al mismo tiempo. Por favor, respira, cuenta hasta 30 y vuelve a enviar tu mensaje.")
+                st.warning("¡Uf! 😅 HugoBot está atendiendo a muchas peticiones al mismo tiempo. Por favor, respira, cuenta hasta 30 y vuelve a enviar tu mensaje.")
             else:
                 st.error(f"Error técnico: {e}")
 
@@ -206,16 +197,16 @@ if prompt_alumno or imagen_subida or audio_grabado:
 # 8. BOTÓN PARA DESCARGAR EL HISTORIAL
 # ---------------------------------------------------------
 st.divider()
-texto_historial = "Historial de Conversación con HugoBot - Modo Balanzas\n\n"
+texto_historial = "Historial de Conversación con HugoBot\n\n"
 for mensaje in st.session_state.historial:
-    rol = "Alumno" if mensaje["rol"] == "user" else "HugoBot"
+    rol = "Usuario" if mensaje["rol"] == "user" else "HugoBot"
     texto = mensaje["texto"] if mensaje["texto"] else "[Se envió una Imagen o Audio]"
     texto_historial += f"{rol}:\n{texto}\n\n{'-'*40}\n\n"
 
 st.download_button(
     label="📥 Descargar Conversación (Archivo de Texto)",
     data=texto_historial,
-    file_name="evidencia_balanzas_hugobot.txt",
+    file_name="historial_hugobot.txt",
     mime="text/plain",
     use_container_width=True
 )
