@@ -201,3 +201,21 @@ if prompt_alumno or imagen_subida or audio_grabado:
                 st.warning("¡Uf! 😅 HugoBot está atendiendo a muchos alumnos al mismo tiempo. Por favor, respira, cuenta hasta 30 y vuelve a enviar tu mensaje.")
             else:
                 st.error(f"Error técnico: {e}")
+
+# ---------------------------------------------------------
+# 8. BOTÓN PARA DESCARGAR EL HISTORIAL
+# ---------------------------------------------------------
+st.divider()
+texto_historial = "Historial de Conversación con HugoBot - Modo Balanzas\n\n"
+for mensaje in st.session_state.historial:
+    rol = "Alumno" if mensaje["rol"] == "user" else "HugoBot"
+    texto = mensaje["texto"] if mensaje["texto"] else "[Se envió una Imagen o Audio]"
+    texto_historial += f"{rol}:\n{texto}\n\n{'-'*40}\n\n"
+
+st.download_button(
+    label="📥 Descargar Conversación (Archivo de Texto)",
+    data=texto_historial,
+    file_name="evidencia_balanzas_hugobot.txt",
+    mime="text/plain",
+    use_container_width=True
+)
