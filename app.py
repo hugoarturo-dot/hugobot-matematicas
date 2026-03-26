@@ -10,9 +10,9 @@ import os
 # ---------------------------------------------------------
 # 1. CONFIGURACIÓN VISUAL Y DE PÁGINA
 # ---------------------------------------------------------
-st.set_page_config(page_title="HugoBot 2.0 - Auditor", page_icon="🤖", layout="wide")
-st.title("🤖 HugoBot: Operación Rescate Vacacional")
-st.write("¡Hola! Soy HugoBot, tu auditor matemático. Cuéntame tu reto, define tus variables y defiende tus ecuaciones.")
+st.set_page_config(page_title="HugoBot 2.0", page_icon="🤖", layout="wide")
+st.title("🤖 HugoBot: Tu Tutor Inteligente")
+st.write("¡Hola! Soy HugoBot. Escribe, sube una foto o grábame un audio con tu duda.")
 
 # ---------------------------------------------------------
 # 2. BARRA LATERAL: SÚPER TECLADO, NIVELES Y SOSTENIBILIDAD
@@ -50,30 +50,34 @@ with st.sidebar:
     st.subheader("Lógica y Letras Griegas")
     st.code("∴  ∵  ∧  ∨  ⇒  ⇔\nα  β  γ  θ  λ  Δ  Σ  Ω")
 
+    st.divider()
+    
+    st.subheader("🤝 Sostenibilidad del Proyecto")
+    st.info(
+        "Cada interacción, análisis de imagen y generación de voz tiene un costo de servidor. "
+        "Imagina a cientos de alumnos realizando varias preguntas al día; son miles de cálculos "
+        "que procesamos y financiamos para mantener este proyecto educativo gratuito.\n\n"
+        "Si HugoBot aporta valor a tu aprendizaje, una donación voluntaria nos ayuda enormemente "
+        "a mantener el sistema vivo para todos."
+    )
+    st.link_button("☕ Realizar Donación Voluntaria", "https://link-de-tu-donacion.com", use_container_width=True)
+
 # ---------------------------------------------------------
-# 3. EL CEREBRO (MODO AUDITOR Y MODELACIÓN)
+# 3. EL CEREBRO (PROMPTS DINÁMICOS GENERALES)
 # ---------------------------------------------------------
 instrucciones_base = """
-Eres HugoBot, un mentor matemático estricto y experto en didáctica, creado por el Profr. Hugo.
-Regla 1: NUNCA des la respuesta final directamente ni resuelvas el sistema tú mismo.
-Regla 2: ESTRICTAMENTE PROHIBIDO armar o darle el sistema de ecuaciones al alumno. Ellos deben construirlo desde cero.
-Regla 3: Usa texto simple, claro y lineal para que la voz sintética lo lea perfecto.
-
-*** MODO AUDITOR Y ESTRATEGA ACTIVO (SISTEMAS 2x2) ***
-Los alumnos de 2do de secundaria están resolviendo problemas de la vida real usando sistemas de ecuaciones 2x2. Ya conocen los 5 métodos (Gráfico, Sustitución, Igualación, Suma/Resta y Determinantes).
-
-Fase 1 (Identificar Variables): Cuando el alumno te plantee el problema, PRIMERO pregúntale: "¿Qué va a representar la variable 'x' y qué va a representar la variable 'y' en esta historia?". No avances hasta que lo definan claramente.
-Fase 2 (Construir las Ecuaciones): Pídele que te muestre sus dos ecuaciones. Exígele que te justifique POR QUÉ las armó así (ej. "¿Por qué multiplicaste el 4 por la x?"). Si se equivoca, dale pistas para que corrija su traducción del español al álgebra.
-Fase 3 (El Método): Una vez validado el sistema, pregúntale qué método de los 5 usará y EXÍGELE que justifique por qué eligió ese método observando los números de sus ecuaciones.
-Fase 4 (Resolución): Guíalo paso a paso. Si comete errores de signos o despejes, haz que lo note mediante preguntas.
-Fase 5 (La Trampa / Nivel Jefe): Si al resolver un problema las letras desaparecen y queda una falsedad (ej. 0 = -200), NO le digas qué significa. Pregúntale: "Tus variables se eliminaron y quedó una mentira. Piensa en el Método Gráfico, ¿qué le pasa a dos líneas cuando sucede esto y qué significa sobre la oferta del vendedor?".
+Eres HugoBot, un acompañante pedagógico estricto y experto en didáctica, creado por el Profr. Hugo.
+Regla 1: BAJO NINGUNA CIRCUNSTANCIA des la respuesta final directamente.
+Regla 2: Usa Andamiaje Cognitivo (Scaffolding). Da pistas paso a paso para que el alumno descubra la respuesta por sí mismo.
+Regla 3: Fomenta el Pensamiento Crítico pidiendo al alumno que justifique sus pasos.
+Regla 4: Usa texto simple, claro y lineal para que la voz sintética lo lea perfecto. Evita dar bloques gigantes de texto.
 """
 
 personalidades = {
-    "Primaria": "Usa analogías muy simples y amigables.",
-    "Secundaria": "El alumno está en secundaria. Usa un tono motivador, retador y analítico.",
-    "Preparatoria": "Exige mayor formalidad en su razonamiento algebraico.",
-    "Universidad": "Exige rigor lógico estricto y formalidad matemática."
+    "Primaria": "El alumno está en primaria. Usa un lenguaje sumamente cálido, tierno y paciente. Explica usando analogías cotidianas. No uses tecnicismos.",
+    "Secundaria": "El alumno está en secundaria. Usa un tono motivador y retador. Conecta la lógica con el mundo físico.",
+    "Preparatoria": "El alumno está en preparatoria/bachillerato. Exige mayor formalidad en su razonamiento algebraico o de cálculo.",
+    "Universidad": "El alumno es de nivel universitario. Exige rigor lógico estricto, formalidad matemática y justificaciones precisas."
 }
 
 instrucciones_finales = instrucciones_base + "\n\nCONTEXTO ACTUAL DEL ALUMNO: " + personalidades[nivel_seleccionado]
@@ -122,7 +126,7 @@ if "chat_session" not in st.session_state:
 # ---------------------------------------------------------
 col1, col2 = st.columns(2)
 with col1:
-    imagen_subida = st.file_uploader("📸 1. Sube una foto de tu procedimiento:", type=["png", "jpg", "jpeg"])
+    imagen_subida = st.file_uploader("📸 1. Sube una foto de tu ejercicio:", type=["png", "jpg", "jpeg"])
 with col2:
     audio_grabado = st.audio_input("🎙️ 2. O graba tu duda con el micrófono:")
 
@@ -185,7 +189,7 @@ if prompt_alumno or imagen_subida or audio_grabado:
         except Exception as e:
             error_str = str(e)
             if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-                st.warning("¡Uf! 😅 HugoBot está atendiendo a muchas peticiones. Por favor, cuenta hasta 10 y vuelve a intentarlo.")
+                st.warning("¡Uf! 😅 HugoBot está atendiendo a muchas peticiones al mismo tiempo. Por favor, respira, cuenta hasta 30 y vuelve a enviar tu mensaje.")
             else:
                 st.error(f"Error técnico: {e}")
 
@@ -193,16 +197,16 @@ if prompt_alumno or imagen_subida or audio_grabado:
 # 8. BOTÓN PARA DESCARGAR EL HISTORIAL
 # ---------------------------------------------------------
 st.divider()
-texto_historial = "Historial de Conversación con HugoBot - Rescate Vacacional\n\n"
+texto_historial = "Historial de Conversación con HugoBot\n\n"
 for mensaje in st.session_state.historial:
-    rol = "Alumno" if mensaje["rol"] == "user" else "HugoBot"
+    rol = "Usuario" if mensaje["rol"] == "user" else "HugoBot"
     texto = mensaje["texto"] if mensaje["texto"] else "[Se envió una Imagen o Audio]"
     texto_historial += f"{rol}:\n{texto}\n\n{'-'*40}\n\n"
 
 st.download_button(
     label="📥 Descargar Conversación (Archivo de Texto)",
     data=texto_historial,
-    file_name="evidencia_sistemas_hugobot.txt",
+    file_name="historial_hugobot.txt",
     mime="text/plain",
     use_container_width=True
 )
