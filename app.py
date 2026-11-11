@@ -99,8 +99,8 @@ def generar_audio_masculino(texto):
     return archivo_salida
 
 if "cliente_ia" not in st.session_state:
-TU_API_KEY = st.secrets["GEMINI_API_KEY"]
-st.session_state.cliente_ia = genai.Client(api_key=TU_API_KEY, http_options={'api_version': 'v1beta'})
+    TU_API_KEY = st.secrets["GEMINI_API_KEY"]
+    st.session_state.cliente_ia = genai.Client(api_key=TU_API_KEY, http_options={'api_version': 'v1beta'})
 
 if "nivel_actual" not in st.session_state:
     st.session_state.nivel_actual = nivel_seleccionado
